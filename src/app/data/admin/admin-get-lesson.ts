@@ -18,6 +18,17 @@ export async function adminGetLesson(id: string) {
             thumbnailKey: true,
             position: true,
             id: true,
+            documents: {
+                select: {
+                    id: true,
+                    name: true,
+                    fileKey: true,
+                    position: true,
+                },
+                orderBy: {
+                    position: 'asc',
+                },
+            },
         },
     });
 

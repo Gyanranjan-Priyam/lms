@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { CloudUploadIcon, ImageIcon, Loader, RotateCcw, XIcon } from "lucide-react";
+import { CloudUploadIcon, FileTextIcon, ImageIcon, Loader, RotateCcw, XIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 
@@ -13,7 +13,7 @@ export function RenderEmptyState({isDragActive}: {isDragActive: boolean}) {
             <p className="text-base font-semibold text-foreground">Drop your files here or 
                 <span className="text-primary font-bold cursor-pointer"> Click to Upload</span>
             </p>
-            <Button typeof="button" className="mt-4">
+            <Button type="button" className="mt-4">
                 Select Files
             </Button>
         </div>
@@ -28,33 +28,51 @@ export function RenderErrorState() {
             </div>
             <p className="text-base font-semibold">Upload Failed</p>
             <p className="text-xs text-muted-foreground font-semibold mt-1">Something went wrong</p>
-            <Button className="mt-4 " typeof="button">
+            <Button className="mt-4" type="button">
                 <RotateCcw />Retry File Selection
             </Button>
         </div>
     )
 }
 
-export function RenderUploadedState({previewUrl, isDeleting, handleRemoveFile, fileType}: {previewUrl: string; isDeleting: boolean; handleRemoveFile: () => void; fileType: 'image' | 'video';}) {
+export function RenderUploadedState({previewUrl, isDeleting, handleRemoveFile, fileType}: {previewUrl: string; isDeleting: boolean; handleRemoveFile: () => void; fileType: 'image' | 'video' | 'pdf';}) {
     return (
         <div className="relative group w-full h-full flex items-center justify-center">
             {fileType === 'video' ? (
                 <video src={previewUrl} controls className="w-full h-full rounded-md" />
+            ) : fileType === 'pdf' ? (
+                <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+                    <FileTextIcon className="size-16 text-red-500 mb-2" />
+                    <p className="text-sm font-medium text-gray-700">PDF Uploaded</p>
+                    <a 
+                        href={previewUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 text-xs mt-1 underline"
+                    >
+                        View PDF
+                    </a>
+                </div>
             ) : (
                 <Image
-                src={previewUrl}
-                alt="Uploaded file"
-                fill
-                className="object-contain p-2"
-            />
+                    src={previewUrl}
+                    alt="Uploaded file"
+                    fill
+                    className="object-contain p-2"
+                />
             )}
             <Button 
+                type="button"
                 variant="destructive" 
                 size="icon"
                 className={cn(
                     'absolute top-4 right-4 cursor-pointer'
                 )}
-                onClick={handleRemoveFile}
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRemoveFile();
+                }}
                 disabled={isDeleting}>
                     {isDeleting ? (
                         <Loader className="animate-spin size-4 cursor-pointer" />

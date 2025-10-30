@@ -2,6 +2,7 @@
 
 import { AdminLessonType } from "@/app/data/admin/admin-get-lesson";
 import { Uploader } from "@/components/file-uploader/Uploader";
+import { MultiPdfUploader } from "@/components/file-uploader/MultiPdfUploader";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +35,10 @@ export function LessonForm({data, chapterId, courseId}: iAppProps) {
             description: data.description ?? undefined,
             videoKey: data.videoKey ?? undefined,
             thumbnailKey: data.thumbnailKey ?? undefined,
+            documents: data.documents?.map(doc => ({
+                name: doc.name,
+                fileKey: doc.fileKey,
+            })) ?? [],
         },
     });
 
@@ -122,6 +127,24 @@ export function LessonForm({data, chapterId, courseId}: iAppProps) {
                                             <FormLabel>Video File</FormLabel>
                                             <FormControl className="mt-2">
                                                 <Uploader onChange={field.onChange} value={field.value} fileTypeAccepted="video"/>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}/>
+
+                                {/* This is documents section */}
+                                <FormField
+                                    control={form.control}
+                                    name="documents"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>PDF Documents (Max 5)</FormLabel>
+                                            <FormControl className="mt-2">
+                                                <MultiPdfUploader 
+                                                    value={field.value} 
+                                                    onChange={field.onChange}
+                                                    maxDocuments={5}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

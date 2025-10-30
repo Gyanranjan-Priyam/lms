@@ -14,6 +14,7 @@ export const fileUploadSchema = z.object({
     contentType: z.string().min(1, {message: "Content type is required"}),
     size: z.number().min(1, {message: "File size is required"}),
     isImage: z.boolean(),
+    isPdf: z.boolean().optional(),
     })
 
     const aj = arcjet

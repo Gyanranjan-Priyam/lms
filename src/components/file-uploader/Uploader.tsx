@@ -19,13 +19,13 @@ interface UploaderState{
     isDeleting: boolean;
     error: boolean;
     objectUrl?: string;
-    fileType: "image" | "video" ;
+    fileType: "image" | "video" | "pdf";
 }
 
 interface iAppProps {
     value?: string;
     onChange?: (value: string) => void;
-    fileTypeAccepted: "image" | "video";
+    fileTypeAccepted: "image" | "video" | "pdf";
 }
 
 export function Uploader({ value, onChange, fileTypeAccepted }: iAppProps) {
@@ -61,6 +61,7 @@ export function Uploader({ value, onChange, fileTypeAccepted }: iAppProps) {
                     contentType: file.type,
                     size: file.size,
                     isImage: fileTypeAccepted === 'image' ? true : false,
+                    isPdf: fileTypeAccepted === 'pdf' ? true : false,
                 })
             })
             if(!presignedResponse.ok) {
@@ -210,7 +211,7 @@ export function Uploader({ value, onChange, fileTypeAccepted }: iAppProps) {
             const invalidFileType = fileRejection.find((rejection) => rejection.errors[0].code === 'file-invalid-type')
 
             if(invalidFileType) {
-                toast.error('Invalid file type. Please upload an image file.')
+                toast.error(`Invalid file type. Please upload a ${fileTypeAccepted} file.`)
             }
             if(fileTooBig) {
                 toast.error('File is too large. Maximum size is 5MB.')
@@ -260,8 +261,10 @@ export function Uploader({ value, onChange, fileTypeAccepted }: iAppProps) {
     const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop,
         accept: fileTypeAccepted === 'image' ? {
             'image/*': []
-        } : {
+        } : fileTypeAccepted === 'video' ? {
             'video/*': []
+        } : {
+            'application/pdf': ['.pdf']
         },
         maxFiles: 1,
         multiple: false,
@@ -270,12 +273,25 @@ export function Uploader({ value, onChange, fileTypeAccepted }: iAppProps) {
         disabled: fileState.uploading || !!fileState.objectUrl,
     })
       return (
-        <Card {...getRootProps()} className={cn(
-            "mt-2 relative border-2 border-dashed transitions-colors duration-200 ease-in-out w-full h-120",
-            isDragActive ? "border=primary bg-primary/10 border-solid" : "border-border hover:border-primary "
-        )}>
+        <Card 
+            {...getRootProps()} 
+            className={cn(
+                "mt-2 relative border-2 border-dashed transitions-colors duration-200 ease-in-out w-full h-120",
+                isDragActive ? "border=primary bg-primary/10 border-solid" : "border-border hover:border-primary "
+            )}
+        >
             <CardContent className='flex items-center justify-center h-full w-full p-4'>
-                <input {...getInputProps()} />
+                <input 
+                    {...getInputProps()} 
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => {
+                        e.stopPropagation();
+                        const inputProps = getInputProps();
+                        if (inputProps.onChange) {
+                            inputProps.onChange(e);
+                        }
+                    }}
+                />
                 {renderContent()}
             </CardContent>
         </Card>
