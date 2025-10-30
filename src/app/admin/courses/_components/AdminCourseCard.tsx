@@ -30,7 +30,7 @@ export function AdminCourseCard({data}: iAppProps) {
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>   
-                            <Link href={`/admin/courses/${data.slug}`} className={buttonVariants({variant: "ghost", className: "justify-start w-full"})}>
+                            <Link href={`/courses/${data.slug}`} className={buttonVariants({variant: "ghost", className: "justify-start w-full"})}>
                                 <Eye className="size-4 mr-2"/>Preview
                             </Link>
                         </DropdownMenuItem>
