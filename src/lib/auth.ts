@@ -27,11 +27,10 @@ export const auth = betterAuth({
     plugins: [
         emailOTP({
             async sendVerificationOTP({ email, otp }) {
-                // Send verification email using nodemailer
+                // Send verification email using nodemailer with beautiful template
                 await sendVerificationEmail({
                     to: email,
-                    subject: 'Verify your email',
-                    html: `<p>Your verification code is: <strong>${otp}</strong></p>`,
+                    otp: otp,
                 });
             },
         }),
