@@ -1,6 +1,8 @@
 import { GetAllCourses } from "@/app/data/course/get-all-courses"
 import { PublicCourseCard, PublicCourseCardSkeleton } from "../_components/PublicCourseCard";
 import { Suspense } from "react";
+import { EmptyStateCourse } from "@/components/general/EmptyState";
+import { getEnrolledCourses } from "@/app/data/user/get-enrolled-courses";
 
 
 
@@ -21,17 +23,30 @@ export default function PublicCourses() {
 }
 
 async function RenderCourses() {
-   const courses = await GetAllCourses();
-
+      const [enrolledCourses, courses] = await Promise.all([getEnrolledCourses(), GetAllCourses()]);
    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         {courses.map((course) => (
-            <PublicCourseCard key={course.id} data={course} />
-         ))}
-      </div>
+      <>
+               <section className="mt-10 mb-30">
+                           {courses.filter(
+                              (course) => !enrolledCourses.some(
+                                 (enrollment) => enrollment.Course.id === course.id
+                              )
+                           ).length === 0 ? (
+                              <EmptyStateCourse title="No available courses." description="There is no new courses added by the admin. Kindly contact admin." buttonText="Contact Admin" href="/contact-us"/>
+                           ) : (
+                              <div className="flex flex-col gap-2 mb-3">
+                                 {courses.filter(
+                              (course) => !enrolledCourses.some(
+                                 (enrollment) => enrollment.Course.id === course.id
+                              )).map((course) => (
+                                 <PublicCourseCard key={course.id} data={course} />
+                              ))}
+                              </div>
+                           )}
+                        </section> 
+            </>
    )
 }
-
 function loadingSkeletonLayout() {
    return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
